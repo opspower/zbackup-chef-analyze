@@ -51,7 +51,7 @@ func TestCookbooksRecordCorrectableAndOffenses(t *testing.T) {
 }
 
 func TestCookbooksEmpty(t *testing.T) {
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(chef.CookbookListResult{}, nil, nil),
 		makeMockSearch("[]", nil),
 		false,
@@ -81,7 +81,7 @@ func TestCookbooksInUseDisplayOnlyUnused(t *testing.T) {
 			},
 		},
 	}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch(mockedNodesSearchRows(), nil), // nodes are found
 		true, // display only unused cookbooks
@@ -92,7 +92,7 @@ func TestCookbooksInUseDisplayOnlyUnused(t *testing.T) {
 		assert.Equal(t, 4, c.TotalCookbooks)
 	}
 
-	c, err = subject.NewCookbooks(
+	c, err = subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch(mockedNodesSearchRows(), nil), // nodes are found
 		false, // display only used cookbooks
@@ -144,7 +144,7 @@ func TestCookbooksNotUsedDisplayOnlyUnused(t *testing.T) {
 			},
 		},
 	}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch("[]", nil), // no nodes are returned
 		true,                      // display only unused cookbooks
@@ -177,7 +177,7 @@ func TestCookbooksNotUsedDisplayOnlyUnused(t *testing.T) {
 		}
 	}
 
-	c, err = subject.NewCookbooks(
+	c, err = subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch("[]", nil), // no nodes are returned
 		false,                     // display only used cookbooks
@@ -210,7 +210,7 @@ func TestCookbooks(t *testing.T) {
 			},
 		},
 	}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		// TODO @afiune gotta implement the newMockCookbook desiredCookbookList
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch(mockedNodesSearchRows(), nil),
@@ -246,7 +246,7 @@ func TestCookbooks(t *testing.T) {
 // Given a failure trying to get the list of cookbooks,
 // verify the result set is as expected
 func TestCookbooks_ListCookbooksErrors(t *testing.T) {
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(chef.CookbookListResult{}, errors.New("i/o timeout"), nil),
 		makeMockSearch("[]", nil),
 		false,
@@ -259,7 +259,7 @@ func TestCookbooks_ListCookbooksErrors(t *testing.T) {
 
 func TestCookbooks_ListAvailableVersionsError(t *testing.T) {
 	cookbookList := chef.CookbookListResult{}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(cookbookList, errors.New("list error"), nil),
 		nil,
 		false,
@@ -270,7 +270,7 @@ func TestCookbooks_ListAvailableVersionsError(t *testing.T) {
 
 func TestCookbooks_NoneAvailable(t *testing.T) {
 
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(chef.CookbookListResult{}, nil, nil),
 		makeMockSearch(mockedEmptyNodesSearchRows(), nil),
 		false,
@@ -294,7 +294,7 @@ func TestCookbooks_DownloadErrors(t *testing.T) {
 			},
 		},
 	}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, errors.New("download error")),
 		makeMockSearch(mockedNodesSearchRows(), nil),
 		false,
@@ -325,7 +325,7 @@ func TestCookbooks_UsageStatErrors(t *testing.T) {
 			},
 		},
 	}
-	c, err := subject.NewCookbooks(
+	c, err := subject.StartPipeline(
 		newMockCookbook(cookbookList, nil, nil),
 		makeMockSearch(mockedNodesSearchRows(), errors.New("lookup error")),
 		// Because the usage error makes it look like no nodes are attached to this cookbook
